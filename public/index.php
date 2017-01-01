@@ -2,6 +2,9 @@
 
 require '../private/vendor/autoload.php';
 
+$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv->load();
+
 $pages = [
 	'privacy-policy' => [ 'content' => '<b>SummonerNames.com</b> will <i>never</i> share any personal information from any user for any purpose.', 'class' => 'bg-warning' ],
 	'disclaimer' => [ 'content' => '<b>SummonerNames.com</b> is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends &copy; Riot Games, Inc.', 'class' => 'bg-warning' ],
