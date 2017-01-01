@@ -12,10 +12,13 @@ RewriteRule . / [L]
 RewriteCond %{REQUEST_URI} ^/api/summoner/(br|eune|euw|kr|lan|las|na|oce|ru|tr)/([^/]+)/?$ [NC]
 RewriteRule . /api/summoner.php?server=%1&name=%2 [L]
 
-# rewrite remaining pages
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule (.*) $1.php [L]
+# rewrite recently-searched requests to recently-searched page
+RewriteCond %{REQUEST_URI} ^/api/recent/?$ [NC]
+RewriteRule . /api/recent.php [L]
+
+# rewrite feedback posts to feedback page
+RewriteCond %{REQUEST_URI} ^/api/feedback/?$ [NC]
+RewriteRule . /api/feedback.php [L]
 
 # error handling
 ErrorDocument 400 /?error=400
