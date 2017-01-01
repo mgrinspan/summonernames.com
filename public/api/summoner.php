@@ -14,5 +14,3 @@ if(isset($_GET['name'], $_GET['server'])) {
 }
 
 exit('{"error":true}');
-
-?>

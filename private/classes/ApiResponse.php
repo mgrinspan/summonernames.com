@@ -105,7 +105,6 @@ class ApiResponse {
 				'ip'
 			])
 			->into('history')
-			->onDuplicateKeyUpdate('count', 'count + 1')
 			->bindValues([
 				'server' => $this->server,
 				'name' => $this->name,

@@ -20,5 +20,3 @@ $db
 header('Content-Type: application/json');
 
 exit(json_encode($db->execute(), JSON_NUMERIC_CHECK));
-
-?>
