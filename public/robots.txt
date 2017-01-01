@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Allow: /page/cookie-policy/
+Allow: /page/disclaimer/
+Allow: /page/privacy-policy/
+Disallow: /br/
+Disallow: /eune/
+Disallow: /euw/
+Disallow: /kr/
+Disallow: /lan/
+Disallow: /las/
+Disallow: /na/
+Disallow: /oce/
+Disallow: /ru/
+Disallow: /tr/
+Disallow: /assets/
+Disallow: /api/

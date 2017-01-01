@@ -1,0 +1,176 @@
+html, body {
+	overflow-x: hidden;
+}
+
+.shown {
+	display: block;
+}
+
+.remove-height {
+	height: 0;
+}
+
+#status {
+	transition: height 500ms ease-out, background-color 500ms ease-in-out;
+	overflow: hidden;
+	padding: 0 15px;
+	text-align: center;
+}
+
+#status > #status-container {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.server #status > #status-container {
+	transform: none;
+}
+
+.pointer {
+	cursor: pointer;
+}
+
+.modal-title {
+	display: inline-block;
+}
+
+.dropdown-menu>li.selected a {
+	background-color: #f5f5f5;
+}
+
+#server, #submit {
+	min-width: 80px;
+}
+
+#text-sampling {
+	visibility: hidden;
+	z-index: -1;
+}
+
+#text-sampling > div {
+	text-align: center;
+}
+
+#submit, #name {
+	border-left-width: 0;
+}
+
+.modal {
+	position: absolute;
+	overflow: visible;
+}
+
+.adsbygoogle {
+	width: 100%;
+	height: 400px;
+	display: block;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.table-responsive {
+	text-align: left;
+	margin: 0;
+	border: 0;
+}
+
+.table {
+	margin-bottom: 0;
+}
+
+th {
+	border-top: 0 !important;
+}
+
+:focus {
+	outline: 0 !important;
+}
+
+#footer {
+	width: 100%;
+}
+
+#footer tr:first-child td {
+	padding-bottom: 10px;
+}
+
+.modal-footer {
+	padding-top: 0;
+	border-top: 0;
+}
+
+#form-container {
+	padding-bottom: 0;
+	border-bottom: 0;
+}
+
+#form-container:after, .modal-footer:before {
+	transition: height 500ms ease-out, background-color 500ms ease-in-out;
+	content: " ";
+	height: 0;
+	display: block;
+	width: calc(100% + 30px);
+	margin: 0 0 0 -15px;
+}
+
+#form-container.modal-border:after {
+	border-top: 1px solid #e5e5e5;
+}
+
+#form-container:after {
+	margin-top: 15px;
+}
+
+.modal-footer:before {
+	margin-bottom: 15px;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+#form-container.ran:after, .modal-footer.ran:before {
+	height: 15px;
+}
+
+#notice, #js-alert {
+	border-bottom: 1px solid #e5e5e5;
+	text-align: center;
+}
+
+#js-alert p {
+	margin: 0;
+}
+
+.bg-clear {
+	background-color: transparent;
+}
+
+.js #main, .js-enabled #js-alert, .js #form-container:after, .js .modal-footer:before, .js #footer, .js #notice {
+	display: none;
+}
+
+textarea {
+	resize: none;
+}
+
+#feedback-form {
+	margin-bottom: 1px;
+}
+
+#message {
+	height: 150px;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+#feedback-submit {
+	border-top-right-radius: 0;
+}
+
+#email {
+	border-top-left-radius: 0;
+	margin-bottom: 1px;
+}
+
+#email:not(:focus) {
+	border-top-width: 0;
+}
