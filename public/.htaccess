@@ -1,3 +1,5 @@
+RewriteEngine On
+
 # rewrite page links to index
 RewriteCond %{REQUEST_URI} ^/page/[^/]+/?$ [NC]
 RewriteRule . / [L]
@@ -12,7 +14,8 @@ RewriteRule . /api/summoner.php?server=%1&name=%2 [L]
 
 # rewrite remaining pages
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^([^\.]+)$ $1.php [NC,L]
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule (.*) $1.php [L]
 
 # error handling
 ErrorDocument 400 /?error=400

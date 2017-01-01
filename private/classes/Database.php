@@ -42,8 +42,4 @@ class Database extends PDO {
 
 		return $result;
 	}
-
-	public function __destruct() {
-		unset($this);
-	}
 }
