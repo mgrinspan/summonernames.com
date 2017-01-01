@@ -2,6 +2,9 @@
 
 require '../../private/vendor/autoload.php';
 
+$dotenv = new Dotenv\Dotenv(dirname(__DIR__));
+$dotenv->load();
+
 header('Content-Type: application/json');
 
 if(isset($_GET['name'], $_GET['server'])) {
