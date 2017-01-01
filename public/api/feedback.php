@@ -7,7 +7,7 @@ if(!isset($_POST['message']) || !is_string($_POST['message']) || strlen($_POST['
 
 require '../../private/vendor/autoload.php';
 
-$dotenv = new Dotenv\Dotenv(dirname(__DIR__));
+$dotenv = new Dotenv\Dotenv(dirname(dirname(__DIR__)));
 $dotenv->load();
 
 $db = new Database;
