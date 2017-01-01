@@ -14,7 +14,7 @@ class ApiResponse {
 
 	private $response;
 
-	private static API_KEY;
+	private static $API_KEY;
 
 	public function __construct($name, $server) {
 		self::$API_KEY = getenv('API_KEY');
