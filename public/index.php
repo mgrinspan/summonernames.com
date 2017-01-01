@@ -108,10 +108,6 @@ if(isset($_SERVER['REDIRECT_URL']) && substr($_SERVER['REDIRECT_URL'], 0, 6) == 
 				</div>
 			</div>
 		</div>
-	
-		<div class="modal-dialog">
-			<ins class="adsbygoogle" data-ad-client="ca-pub-4542576939768733" data-ad-slot="1709144402" data-ad-format="auto"></ins>
-		</div>
 	</div>
 
 	<div id="text-sampling" class="modal shown">
