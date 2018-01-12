@@ -1,6 +1,6 @@
 USE `summonernames`;
 
-CREATE TABLE `history` IF NOT EXISTS (
+CREATE TABLE IF NOT EXISTS `history` (
 	`id` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
 	`name` VARCHAR(255),
 	`ip` VARCHAR(255),
@@ -8,7 +8,7 @@ CREATE TABLE `history` IF NOT EXISTS (
 	`date_searched` TIMESTAMP
 );
 
-CREATE TABLE `feedback` IF NOT EXISTS (
+CREATE TABLE IF NOT EXISTS `feedback` (
 	`id` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
 	`email` VARCHAR(255),
 	`message` TEXT,
