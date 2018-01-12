@@ -331,7 +331,7 @@
 			updateURL(data.server, data.name);
 
 			display('static', 'loading');
-			$.getJSON('/api/summoner/' + data.server.toLowerCase() + '/' + data.name + '/')
+			$.getJSON('/api/summoner.php?server=' + data.server.toLowerCase() + '&name=' + data.name)
 				.done(parseSummoner)
 				.fail(fetchError);
 		});
@@ -355,7 +355,7 @@
 			}
 
 			display('static', 'loading');
-			$.getJSON('/api/recent/')
+			$.getJSON('/api/recent.php')
 				.done(parseTop)
 				.fail(fetchError);
 		});
@@ -383,7 +383,7 @@
 				return;
 			}
 
-			$.post('/api/feedback/', {
+			$.post('/api/feedback.php', {
 				message: message,
 				email: email
 			})
