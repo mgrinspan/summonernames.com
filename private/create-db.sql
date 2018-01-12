@@ -1,0 +1,16 @@
+USE `summonernames`;
+
+CREATE TABLE `history` IF NOT EXISTS (
+	`id` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+	`name` VARCHAR(255),
+	`ip` VARCHAR(255),
+	`server` VARCHAR(255),
+	`date_searched` TIMESTAMP
+);
+
+CREATE TABLE `feedback` IF NOT EXISTS (
+	`id` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+	`email` VARCHAR(255),
+	`message` TEXT,
+	`ip` VARCHAR(255)
+);
