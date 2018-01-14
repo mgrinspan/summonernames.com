@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Servers;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -14,6 +15,19 @@ class ApiController extends Controller {
         $region = strtolower(Servers::getRegion($server));
         $summoner = rawurlencode($summoner);
         $url = "https://{$region}.api.riotgames.com/lol/summoner/v3/summoners/by-name/{$summoner}?api_key={$apiKey}";
+        $cacheKey = $region . '-' . strtolower($summoner);
+
+        $cached = Cache::get($cacheKey);
+
+        if ($cached) {
+            DB::table('history')->insert([
+                'name' => $cached['name'],
+                'server' => strtoupper($cached['server']),
+                'ip' => $request->ip(),
+            ]);
+
+            return $cached;
+        }
 
         $response = [
             'name' => $summoner,
@@ -34,7 +48,7 @@ class ApiController extends Controller {
                 throw new Exception;
             }
         } catch (Throwable $exception) {
-            if(trim($exception->getMessage()) === "file_get_contents({$url}): failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found") {
+            if (trim($exception->getMessage()) === "file_get_contents({$url}): failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found") {
                 $response['time'] = 0;
             } else {
                 $response['error'] = true;
@@ -46,6 +60,8 @@ class ApiController extends Controller {
             'server' => strtoupper($response['server']),
             'ip' => $request->ip(),
         ]);
+
+        Cache::put($cacheKey, $response, now()->addMinutes(10));
 
         return $response;
     }
