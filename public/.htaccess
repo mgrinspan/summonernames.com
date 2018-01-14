@@ -1,30 +1,21 @@
-RewriteEngine On
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
 
-# rewrite page links to index
-RewriteCond %{REQUEST_URI} ^/page/[^/]+/?$ [NC]
-RewriteRule . / [L]
+    RewriteEngine On
 
-# rewrite summoner name links to index
-RewriteCond %{REQUEST_URI} ^/(?:br|eune|euw|kr|lan|las|na|oce|ru|tr)/[^/]+/?$ [NC]
-RewriteRule . / [L]
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-# rewrite summoner requests to summoner page
-RewriteCond %{REQUEST_URI} ^/api/summoner/(br|eune|euw|kr|lan|las|na|oce|ru|tr)/([^/]+)/?$ [NC]
-RewriteRule . /api/summoner.php?server=%1&name=%2 [L]
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
 
-# rewrite recently-searched requests to recently-searched page
-RewriteCond %{REQUEST_URI} ^/api/recent/?$ [NC]
-RewriteRule . /api/recent.php [L]
-
-# rewrite feedback posts to feedback page
-RewriteCond %{REQUEST_URI} ^/api/feedback/?$ [NC]
-RewriteRule . /api/feedback.php [L]
-
-# error handling
-ErrorDocument 400 /?error=400
-ErrorDocument 401 /?error=401
-ErrorDocument 402 /?error=402
-ErrorDocument 403 /?error=403
-ErrorDocument 404 /?error=404
-
-ErrorDocument 500 /?error=500
+    # Handle Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
