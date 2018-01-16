@@ -68,7 +68,9 @@ class ApiController extends Controller {
             'ip' => $request->ip(),
         ]);
 
-        Cache::put($cacheKey, $response, now()->addMinutes(10));
+        if(!isset($response['error'])) {
+            Cache::put($cacheKey, $response, now()->addMinutes(10));
+        }
 
         return $response;
     }
