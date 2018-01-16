@@ -21,6 +21,7 @@ return [
 
     'riot-api' => [
         'key' => env('RIOT_API_KEY'),
+        'rate-limits' => env('RIOT_API_RATE_LIMITS', '1:1'),
     ],
 
     'ses' => [

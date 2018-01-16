@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\RedisRateLimiter;
 use App\Servers;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Throwable;
+use Touhonoob\RateLimit\RateLimit;
 
 class ApiController extends Controller {
     public function eta(Request $request, $server, $summoner) {
@@ -27,6 +30,10 @@ class ApiController extends Controller {
             ]);
 
             return $cached;
+        }
+
+        if ($this->rateLimitExceeded($region)) {
+            return ['error' => true];
         }
 
         $response = [
@@ -79,5 +86,27 @@ class ApiController extends Controller {
         DB::table('feedback')->insert($valid + ['ip' => $request->ip()]);
 
         return '';
+    }
+
+    protected function rateLimitExceeded($region) {
+        $adapter = new class {
+            public function __call($method, $arguments) {
+                return Redis::{$method}(...$arguments);
+            }
+        };
+
+        $hitLimit = false;
+        collect(explode(',', config('services.riot-api.rate-limits')))
+            ->each(function ($limit) use (&$hitLimit, &$adapter, $region) {
+                $limit = explode(':', $limit);
+
+                $limiter = new RateLimit('rate-limit', (int)$limit[0] + 1, (int)$limit[1], $adapter);
+
+                $hitLocalLimit = !$limiter->check($region);
+
+                $hitLimit = $hitLimit || $hitLocalLimit;
+            });
+
+        return $hitLimit;
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5455abb4b7f6851729f50ef9a1e17b8d",
+    "content-hash": "70fc2a9e3ca5f735b31cf381b7f05a11",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -408,16 +408,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.5.28",
+            "version": "v5.5.29",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "cfafae1f2043208390a7c984e3070696f4969605"
+                "reference": "c58b6ff96fb56cc92e24545870be13cdcfcbc43a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/cfafae1f2043208390a7c984e3070696f4969605",
-                "reference": "cfafae1f2043208390a7c984e3070696f4969605",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/c58b6ff96fb56cc92e24545870be13cdcfcbc43a",
+                "reference": "c58b6ff96fb56cc92e24545870be13cdcfcbc43a",
                 "shasum": ""
             },
             "require": {
@@ -538,7 +538,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2017-12-26T16:24:40+00:00"
+            "time": "2018-01-15T14:07:47+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -2223,6 +2223,50 @@
             "description": "CssToInlineStyles is a class that enables you to convert HTML-pages/files into HTML-pages/files with inline styles. This is very useful when you're sending emails.",
             "homepage": "https://github.com/tijsverkoyen/CssToInlineStyles",
             "time": "2017-11-27T11:13:29+00:00"
+        },
+        {
+            "name": "touhonoob/rate-limit",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/touhonoob/RateLimit.git",
+                "reference": "dd524f19e91f542eaf33a41188102293249ebc49"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/touhonoob/RateLimit/zipball/dd524f19e91f542eaf33a41188102293249ebc49",
+                "reference": "dd524f19e91f542eaf33a41188102293249ebc49",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.6.6"
+            },
+            "suggest": {
+                "ext-apc": "^4.0",
+                "ext-apcu": "^4.0",
+                "ext-redis": "^2.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Touhonoob\\RateLimit\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "touhonoob",
+                    "email": "touhonoob@gmail.com"
+                }
+            ],
+            "description": "Rate Limiting Library With Token Bucket Algorithm",
+            "time": "2016-06-07T04:55:23+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
