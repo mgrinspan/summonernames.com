@@ -17,12 +17,12 @@
 			},
 
 			privacyPolicy: {
-				html: '<b>SummonerNames.com</b> will <i>never</i> share any personal information from any user for any purpose.',
+				html: '<b>SummonerNames.com</b> will <i>never</i> share any personal information from any user with any third party for any purpose.',
 				className: 'bg-warning'
 			},
 
 			cookiePolicy: {
-				html: '<b>SummonerNames.com</b> uses cookies to save the most recent form input submitted. <a href="//support.google.com/adsense/answer/1348695">Additionally, Google Adsense may save some cookies.</a>',
+				html: '<b>SummonerNames.com</b> uses cookies to save the most recent search. <a href="//support.google.com/adsense/answer/1348695">Additionally, Google Adsense may save some cookies.</a>',
 				className: 'bg-warning'
 			},
 
