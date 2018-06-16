@@ -126,7 +126,7 @@
 			'bg-info': '#D9EDF7',
 			'bg-warning': '#FCF8E3',
 			'bg-danger': '#F2DEDE'
-		}
+		};
 
 		var className = '';
 		var template;
@@ -136,7 +136,7 @@
 
 		switch (type) {
 			case 'static':
-				data ? (old.data = data) : (data = old.data)
+				data ? (old.data = data) : (data = old.data);
 
 				template = templates.static[templateName];
 
@@ -166,7 +166,9 @@
 
 	function setCookies(cookies) {
 		for (var cookie in cookies) {
-			document.cookie = encodeURIComponent(cookie) + '=' + cookies[cookie] + '; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/; domain=summonernames.com';
+			if (cookies.hasOwnProperty(cookie)) {
+				document.cookie = encodeURIComponent(cookie) + '=' + cookies[cookie] + '; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/; domain=summonernames.com';
+			}
 		}
 	}
 
@@ -186,7 +188,7 @@
 	function prepareData() {
 		return ({
 			server: $('#server').val(),
-			name: encodeURIComponent(($('#name').val() || $('#name').attr('placeholder')).trim()),
+			name: encodeURIComponent(($('#name').val() || $('#name').attr('placeholder')).trim())
 		});
 	}
 
@@ -247,15 +249,11 @@
 		}
 	}
 
-	var topCache;
-
 	function parseTop(data) {
 		if (!(data instanceof Object)) {
 			fetchError();
 			return;
 		}
-
-		topCache = data;
 
 		display('dynamic', 'recentlySearched', data);
 	}
@@ -344,11 +342,6 @@
 		});
 
 		$('#recently-searched').on('click', function () {
-			if (topCache) {
-				display('dynamic', 'recentlySearched', topCache);
-				return;
-			}
-
 			display('static', 'loading');
 			$.getJSON('/api/recent/')
 				.done(parseTop)
