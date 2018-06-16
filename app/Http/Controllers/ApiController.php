@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\RedisRateLimiter;
 use App\Servers;
 use Exception;
 use Illuminate\Http\Request;
