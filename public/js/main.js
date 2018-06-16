@@ -57,7 +57,7 @@
 					var $html;
 					var $tbody;
 
-					if(!data.length) {
+					if (!data.length) {
 						return 'No summoner names have recently been searched for. Try searching now!';
 					}
 
@@ -94,17 +94,18 @@
 		var $textSamplingBody = $('#text-sampling .modal-dialog');
 		var $parent = $('<div>');
 		var $child = $('<span>');
-					
+
 		$parent.addClass('modal-body ' + (className || '')).html($child.html(html));
-		
+
 		$textSamplingBody.html($parent);
-		
+
 		return $parent.height();
 	}
 
 	var ran;
+
 	function animateHeight(height) {
-		if(!ran) {
+		if (!ran) {
 			ran = true;
 
 			$('#form-container').addClass('modal-border ran');
@@ -115,6 +116,7 @@
 	}
 
 	var old = {};
+
 	function display(type, templateName, data) {
 		var $status = $('#status');
 		var colors = {
@@ -132,7 +134,7 @@
 
 		templateName ? (old.templateName = templateName) : (templateName = old.templateName);
 
-		switch(type) {
+		switch (type) {
 			case 'static':
 				data ? (old.data = data) : (data = old.data)
 
@@ -143,12 +145,12 @@
 				break;
 			case 'dynamic':
 				template = templates.dynamic[templateName];
-				
+
 				className = template.className;
 				html = template.html(data);
 				break;
 		}
-		
+
 		html ? (old.html = html) : (html = old.html);
 
 		animateHeight(sample(className, templateName, html));
@@ -163,14 +165,14 @@
 	}
 
 	function setCookies(cookies) {
-		for(var cookie in cookies) {
+		for (var cookie in cookies) {
 			document.cookie = encodeURIComponent(cookie) + '=' + cookies[cookie] + '; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/; domain=summonernames.com';
 		}
 	}
 
 	function getCookie(name) {
 		var parts = ('; ' + document.cookie).split('; ' + name + '=');
-		if(parts.length > 1) return decodeURIComponent(parts.pop().split(';').shift());
+		if (parts.length > 1) return decodeURIComponent(parts.pop().split(';').shift());
 	}
 
 	function updateURL(server, name) {
@@ -195,7 +197,7 @@
 		var time;
 		var now;
 
-		if(!(data instanceof Object) || data.error) {
+		if (!(data instanceof Object) || data.error) {
 			fetchError();
 			return;
 		}
@@ -207,13 +209,13 @@
 		date = datetime.toLocaleDateString();
 		time = datetime.toLocaleTimeString().replace(/^(\d{1,2}:\d{2}):\d{2}\s([AP]M).*$/, '$1 $2');
 
-		if(timezone.length > 3) {
+		if (timezone.length > 3) {
 			timezone = timezone.match(/\b([A-Z]+)/g).join('');
 		}
 
 		now = Math.round(Date.now() / 1000) + 5000;
 
-		if(datetime.getTime() / 1000 <= now) {
+		if (datetime.getTime() / 1000 <= now) {
 			display('dynamic', 'available', {
 				server: data.server,
 				name: data.name
@@ -232,9 +234,9 @@
 	function fetchError() {
 		display('static', 'error');
 	}
-	
+
 	function toggleDropdown(event) {
-		if(event) {
+		if (event) {
 			event.preventDefault();
 
 			$('#server-list').toggleClass('shown');
@@ -246,8 +248,9 @@
 	}
 
 	var topCache;
+
 	function parseTop(data) {
-		if(!(data instanceof Object)) {
+		if (!(data instanceof Object)) {
 			fetchError();
 			return;
 		}
@@ -265,7 +268,7 @@
 		];
 
 		linked.some(function (match) {
-			if(match) {
+			if (match) {
 				$('#server-list li[data-server="' + match[1].toUpperCase() + '"]').trigger('click');
 				$('#name').attr('placeholder', decodeURIComponent(match[2]).replace(/\+/g, ' '));
 				$('#main').trigger('submit');
@@ -301,7 +304,7 @@
 
 		var width = window.innerWidth;
 		$(window).on('resize', function () {
-			if(window.innerWidth !== width) {
+			if (window.innerWidth !== width) {
 				width = window.innerWidth;
 
 				ran && display();
@@ -332,7 +335,7 @@
 
 		$('#disclaimer, #privacy-policy, #cookie-policy').on('click', function (event) {
 			event.preventDefault();
-			
+
 			display('static', $(this).attr('id').replace('-p', 'P'));
 		});
 
@@ -341,7 +344,7 @@
 		});
 
 		$('#recently-searched').on('click', function () {
-			if(topCache) {
+			if (topCache) {
 				display('dynamic', 'recentlySearched', topCache);
 				return;
 			}
@@ -368,7 +371,7 @@
 			var message = $('#message').val();
 			var email = $('#email').val();
 
-			if(message.length > 1000) {
+			if (message.length > 1000) {
 				feedback = message;
 
 				display('static', 'messageTooLong');

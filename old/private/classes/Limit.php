@@ -5,19 +5,23 @@ use LeagueWrap\LimitInterface;
 class Limit implements LimitInterface {
 
 	/**
+	 * The Redis instance.
+	 *
+	 * @var Redis
+	 */
+	protected $redis;
+	/**
 	 * Whether or not a Reds connection is available.
 	 *
 	 * @var bool
 	 */
 	private $valid;
-
 	/**
 	 * The key that will be used for the Redis storage.
 	 *
 	 * @var string
 	 */
 	private $key;
-
 	/**
 	 * The max amount of hits the key can take in the given amount
 	 * of seconds.
@@ -25,14 +29,12 @@ class Limit implements LimitInterface {
 	 * @var int
 	 */
 	private $hits;
-
 	/**
 	 * The amount of seconds to let the hits accumulate for.
 	 *
 	 * @var int
 	 */
 	private $seconds;
-
 	/**
 	 * The region that is attached to this limit counter.
 	 *
@@ -41,13 +43,6 @@ class Limit implements LimitInterface {
 	private $region;
 
 	/**
-	 * The Redis instance.
-	 *
-	 * @var Redis
-	 */
-	protected $redis;
-	
-	/**
 	 * Sets up Redis if it exists.
 	 */
 	public function __construct() {
@@ -55,7 +50,7 @@ class Limit implements LimitInterface {
 			$this->redis = new Redis;
 			$this->redis->connect('127.0.0.1', 6379);
 			$this->valid = $this->redis->ping() === '+PONG';
-		} catch(RedisException $e) {
+		} catch (RedisException $e) {
 			$this->valid = false;
 		}
 	}
@@ -76,8 +71,8 @@ class Limit implements LimitInterface {
 	 * @chainable
 	 */
 	public function setRate($hits, $seconds, $region) {
-		$this->hits = (int) $hits;
-		$this->seconds = (int) $seconds;
+		$this->hits = (int)$hits;
+		$this->seconds = (int)$seconds;
 		$this->region = strtolower($region);
 		$this->key = "leagueWrap.hits.{$this->region}.{$this->hits}.{$this->seconds}";
 
@@ -102,7 +97,7 @@ class Limit implements LimitInterface {
 	public function hit($count = 1) {
 		$hitsLeft = $this->redis->get($this->key);
 
-		if($hitsLeft === false) {
+		if ($hitsLeft === false) {
 			$hitsLeft = $this->hits;
 			$this->redis->setex($this->key, $this->seconds, $this->hits);
 		}
@@ -117,7 +112,7 @@ class Limit implements LimitInterface {
 	 */
 	public function remaining() {
 		$hitsLeft = $this->redis->get($this->key);
-		
+
 		return $hitsLeft === false ? $this->hits : $hitsLeft;
 	}
 
@@ -130,7 +125,7 @@ class Limit implements LimitInterface {
 	public function isValid() {
 		try {
 			return $this->valid && $this->redis->ping() === '+PONG';
-		} catch(RedisException $e) {
+		} catch (RedisException $e) {
 			return false;
 		}
 	}

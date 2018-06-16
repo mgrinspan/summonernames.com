@@ -13,102 +13,105 @@ use Throwable;
 use Touhonoob\RateLimit\RateLimit;
 
 class ApiController extends Controller {
-    public function eta(Request $request, $server, $summoner) {
-        $apiKey = config('services.riot-api.key');
-        $region = strtolower(Servers::getRegion($server));
-        $summoner = rawurlencode($summoner);
-        $url = "https://{$region}.api.riotgames.com/lol/summoner/v3/summoners/by-name/{$summoner}?api_key={$apiKey}";
-        $cacheKey = $region . '-' . strtolower($summoner);
+	public function eta(Request $request, $server, $summoner) {
+		$apiKey = config('services.riot-api.key');
+		$region = strtolower(Servers::getRegion($server));
+		$summoner = rawurlencode($summoner);
+		$url = "https://{$region}.api.riotgames.com/lol/summoner/v3/summoners/by-name/{$summoner}?api_key={$apiKey}";
+		$cacheKey = $region . '-' . strtolower($summoner);
 
-        $cached = Cache::get($cacheKey);
+		$cached = Cache::get($cacheKey);
 
-        if ($cached) {
-            DB::table('history')->insert([
-                'name' => $cached['name'],
-                'server' => strtoupper($cached['server']),
-                'ip' => $request->ip(),
-            ]);
+		if ($cached) {
+			DB::table('history')->insert([
+				'name' => $cached['name'],
+				'server' => strtoupper($cached['server']),
+				'ip' => $request->ip(),
+			]);
 
-            return $cached;
-        }
+			return $cached;
+		}
 
-        if ($this->rateLimitExceeded($region)) {
-            return ['error' => true];
-        }
+		$response = [
+			'name' => $summoner,
+			'time' => null,
+			'server' => strtoupper($server),
+		];
 
-        $response = [
-            'name' => $summoner,
-            'time' => null,
-            'server' => strtoupper($server),
-        ];
-        try {
-            $data = json_decode(file_get_contents($url));
+		if ($this->rateLimitExceeded($region)) {
+			$response['error'] = true;
 
-            if (isset($data->status->status_code) && $data->status->status_code === 404) {
-                $response['time'] = 0;
-            } elseif (isset($data->summonerLevel, $data->name, $data->revisionDate)) {
-                $months = max(min($data->summonerLevel, 6), 30);
+			return $response;
+		}
 
-                $response['name'] = $data->name;
-                $response['time'] = strtotime("+{$months} months", $data->revisionDate / 1000);
-            } else {
-                throw new Exception;
-            }
-        } catch (Throwable $exception) {
-            if (trim($exception->getMessage()) === "file_get_contents({$url}): failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found") {
-                $response['time'] = 0;
-            } else {
-                $response['error'] = true;
-            }
-        }
+		try {
+			$data = json_decode(file_get_contents($url));
 
-        DB::table('history')->insert([
-            'name' => $response['name'],
-            'server' => strtoupper($response['server']),
-            'ip' => $request->ip(),
-        ]);
+			if (isset($data->status->status_code) && $data->status->status_code === 404) {
+				$response['time'] = 0;
+			} elseif (isset($data->summonerLevel, $data->name, $data->revisionDate)) {
+				$months = max(min($data->summonerLevel, 6), 30);
 
-        if(!isset($response['error'])) {
-            Cache::put($cacheKey, $response, now()->addMinutes(10));
-        }
+				$response['name'] = $data->name;
+				$response['time'] = strtotime("+{$months} months", $data->revisionDate / 1000);
+			} else {
+				throw new Exception;
+			}
+		} catch (Throwable $exception) {
+			if (trim($exception->getMessage()) === "file_get_contents({$url}): failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found") {
+				$response['time'] = 0;
+			} else {
+				$response['error'] = true;
+			}
+		}
 
-        return $response;
-    }
+		DB::table('history')->insert([
+			'name' => $response['name'],
+			'server' => strtoupper($response['server']),
+			'ip' => $request->ip(),
+		]);
 
-    public function recent() {
-        return DB::table('history')->distinct()->latest()->limit(10)->select('name', 'server')->get();
-    }
+		if (!$response['error']) {
+			Cache::put($cacheKey, $response, now()->addMinutes(10));
+		}
 
-    public function feedback(Request $request) {
-        $valid = $request->validate([
-            'email' => 'nullable|email',
-            'message' => 'required|string|min:1|max:65535',
-        ]);
+		return $response;
+	}
 
-        DB::table('feedback')->insert($valid + ['ip' => $request->ip()]);
+	protected function rateLimitExceeded($region) {
+		$adapter = new class {
+			public function __call($method, $arguments) {
+				return Redis::{$method}(...$arguments);
+			}
+		};
 
-        return '';
-    }
+		$hitLimit = false;
+		collect(explode(',', config('services.riot-api.rate-limits')))
+			->each(function ($limit) use (&$hitLimit, &$adapter, $region) {
+				$limit = explode(':', $limit);
 
-    protected function rateLimitExceeded($region) {
-        $adapter = new class {
-            public function __call($method, $arguments) {
-                return Redis::{$method}(...$arguments);
-            }
-        };
+				$limiter = new RateLimit('rate-limit', (int)$limit[0] + 1, (int)$limit[1], $adapter);
 
-        $hitLimit = false;
-        collect(explode(',', config('services.riot-api.rate-limits')))
-            ->each(function ($limit) use (&$hitLimit, &$adapter, $region) {
-                $limit = explode(':', $limit);
+				$hitLocalLimit = !$limiter->check($region);
 
-                $limiter = new RateLimit('rate-limit', (int)$limit[0] + 1, (int)$limit[1], $adapter);
+				$hitLimit = $hitLimit || $hitLocalLimit;
+			});
 
-                $hitLocalLimit = !$limiter->check($region);
+		return $hitLimit;
+	}
 
-                $hitLimit = $hitLimit || $hitLocalLimit;
-            });
+	public function recent() {
+		return DB::table('history')->distinct()->latest()->limit(10)->select('name', 'server')->get();
+	}
 
-        return $hitLimit;
-    }
+	public function feedback(Request $request) {
+		$valid = $request->validate([
+			'email' => 'nullable|email',
+			'message' => 'required|string|min:1|max:65535',
+		]);
+
+		DB::table('feedback')->insert($valid + ['ip' => $request->ip()]);
+
+		return '';
+	}
 }

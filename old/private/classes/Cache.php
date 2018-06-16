@@ -26,7 +26,7 @@ class Cache implements CacheInterface {
 			$this->redis = new Redis;
 			$this->redis->connect('127.0.0.1', 6379);
 			$this->valid = $this->redis->ping() === '+PONG';
-		} catch(RedisException $e) {
+		} catch (RedisException $e) {
 			$this->valid = false;
 		}
 	}
@@ -41,13 +41,27 @@ class Cache implements CacheInterface {
 	 * @return bool
 	 */
 	public function set($key, $response, $seconds) {
-		if($response->getCode() >= 400) {
+		if ($response->getCode() >= 400) {
 			return false;
 		}
 
-		if($this->isValid()) {
+		if ($this->isValid()) {
 			return $this->redis->setex($key, $seconds, $response->__toString());
 		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Is the current limit object valid on this machine (i.e. does
+	 * the machine have Redis).
+	 *
+	 * @return bool
+	 */
+	public function isValid() {
+		try {
+			return $this->valid && $this->redis->ping() === '+PONG';
+		} catch (RedisException $e) {
 			return false;
 		}
 	}
@@ -59,7 +73,7 @@ class Cache implements CacheInterface {
 	 * @return bool
 	 */
 	public function has($key) {
-		if($this->isValid()) {
+		if ($this->isValid()) {
 			return $this->redis->exists($key);
 		} else {
 			return false;
@@ -74,19 +88,5 @@ class Cache implements CacheInterface {
 	 */
 	public function get($key) {
 		return $this->redis->get($key);
-	}
-
-	/**
-	 * Is the current limit object valid on this machine (i.e. does
-	 * the machine have Redis).
-	 *
-	 * @return bool
-	 */
-	public function isValid() {
-		try {
-			return $this->valid && $this->redis->ping() === '+PONG';
-		} catch(RedisException $e) {
-			return false;
-		}
 	}
 }

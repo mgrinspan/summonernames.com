@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,8 +12,8 @@ use Illuminate\Http\Request;
 */
 
 Route::get('summoner/{server}/{summoner}', 'ApiController@eta')
-    ->where('server', '(?:br|eune|euw|jp|kr|lan|las|na|oce|pbe|ru|tr)')
-    ->where('summoner', '[^/]+');
+	->where('server', '(?:br|eune|euw|jp|kr|lan|las|na|oce|pbe|ru|tr)')
+	->where('summoner', '[^/]+');
 
 Route::get('recent', 'ApiController@recent');
 

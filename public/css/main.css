@@ -35,7 +35,7 @@ html, body {
 	display: inline-block;
 }
 
-.dropdown-menu>li.selected a {
+.dropdown-menu > li.selected a {
 	background-color: #f5f5f5;
 }
 

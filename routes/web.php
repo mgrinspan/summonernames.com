@@ -14,5 +14,5 @@
 Route::get('/', 'IndexController@index');
 
 Route::get('/{server}/{summonerOrPage}', 'IndexController@index')
-    ->where('server', '(?:br|eune|euw|jp|kr|lan|las|na|oce|pbe|ru|tr|page)')
-    ->where('summonerOrPage', '[^/]+');
+	->where('server', '(?:br|eune|euw|jp|kr|lan|las|na|oce|pbe|ru|tr|page)')
+	->where('summonerOrPage', '[^/]+');
