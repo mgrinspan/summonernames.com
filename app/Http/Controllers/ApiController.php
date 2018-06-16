@@ -36,6 +36,7 @@ class ApiController extends Controller {
 			'name' => $summoner,
 			'time' => null,
 			'server' => strtoupper($server),
+			'error' => false,
 		];
 
 		if ($this->rateLimitExceeded($region)) {
@@ -58,6 +59,7 @@ class ApiController extends Controller {
 				throw new Exception;
 			}
 		} catch (Throwable $exception) {
+			dd($exception);
 			if (trim($exception->getMessage()) === "file_get_contents({$url}): failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found") {
 				$response['time'] = 0;
 			} else {
