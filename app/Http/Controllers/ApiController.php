@@ -16,7 +16,7 @@ class ApiController extends Controller {
 		$apiKey = config('services.riot-api.key');
 		$region = strtolower(Servers::getRegion($server));
 		$summoner = rawurlencode($summoner);
-		$url = "https://{$region}.api.riotgames.com/lol/summoner/v3/summoners/by-name/{$summoner}?api_key={$apiKey}";
+		$url = "https://{$region}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{$summoner}?api_key={$apiKey}";
 		$cacheKey = $region . '-' . strtolower($summoner);
 
 		$cached = Cache::get($cacheKey);
