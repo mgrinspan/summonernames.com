@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Servers;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -12,68 +11,101 @@ use Throwable;
 use Touhonoob\RateLimit\RateLimit;
 
 class ApiController extends Controller {
-	public function eta(Request $request, $server, $summoner) {
-		$apiKey = config('services.riot-api.key');
-		$region = strtolower(Servers::getRegion($server));
-		$summoner = rawurlencode($summoner);
-		$url = "https://{$region}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{$summoner}?api_key={$apiKey}";
-		$cacheKey = $region . '-' . strtolower($summoner);
+	protected function getSummonerByName($apiKey, $region, $summonerName) {
+		$summonerName = rawurlencode($summonerName);
 
-		$cached = Cache::get($cacheKey);
+		$cacheKey = 'summoner-' . $region . '-' . sha1($summonerName);
 
-		if ($cached) {
-			DB::table('history')->insert([
-				'name' => $cached['name'],
-				'server' => strtoupper($cached['server']),
-				'ip' => $request->ip(),
-			]);
-
-			return $cached;
+		if(Cache::has($cacheKey)) {
+			return Cache::get($cacheKey);
 		}
 
+		$url = "https://{$region}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{$summonerName}?api_key={$apiKey}";
+
+		try {
+			$data = json_decode(file_get_contents($url));
+
+			if(isset($data->summonerLevel, $data->name, $data->accountId)) {
+				Cache::put($cacheKey, $data, now()->addMinutes(10));
+
+				return $data;
+			} else {
+				return null;
+			}
+		} catch(Throwable $exception) {
+			return null;
+		}
+	}
+
+	protected function getLastMatchByAccountId($apiKey, $region, $accountId) {
+		$cacheKey = 'matches-' . $region . '-' . sha1($accountId);
+
+		if(Cache::has($cacheKey)) {
+			return Cache::get($cacheKey);
+		}
+
+		$url = "https://{$region}.api.riotgames.com/lol/match/v4/matchlists/by-account/{$accountId}?beginIndex=0&endIndex=1&api_key={$apiKey}";
+
+		try {
+			$data = json_decode(file_get_contents($url));
+
+			if(isset($data->matches[0])) {
+				$lastMatch = $data->matches[0];
+
+				Cache::put($cacheKey, $lastMatch, now()->addMinutes(10));
+
+				return $lastMatch;
+			} else {
+				return null;
+			}
+		} catch(Throwable $exception) {
+			return null;
+		}
+	}
+
+	public function eta(Request $request, $server, $summonerName) {
+		$apiKey = config('services.riot-api.key');
+		$region = strtolower(Servers::getRegion($server));
+
 		$response = [
-			'name' => $summoner,
-			'time' => null,
+			'name'   => $summonerName,
+			'time'   => null,
 			'server' => strtoupper($server),
-			'error' => false,
+			'error'  => false,
 		];
 
-		if ($this->rateLimitExceeded($region)) {
+		if($this->rateLimitExceeded($region)) {
 			$response['error'] = true;
 
 			return $response;
 		}
 
-		try {
-			$data = json_decode(file_get_contents($url));
+		$summonerData = $this->getSummonerByName($apiKey, $region, $summonerName);
 
-			if (isset($data->status->status_code) && $data->status->status_code === 404) {
-				$response['time'] = 0;
-			} elseif (isset($data->summonerLevel, $data->name, $data->revisionDate)) {
-				$months = max(min($data->summonerLevel, 6), 30);
+		if($summonerData === null || $this->rateLimitExceeded($region)) {
+			$response['error'] = true;
 
-				$response['name'] = $data->name;
-				$response['time'] = strtotime("+{$months} months", $data->revisionDate / 1000);
-			} else {
-				throw new Exception;
-			}
-		} catch (Throwable $exception) {
-			if (trim($exception->getMessage()) === "file_get_contents({$url}): failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found") {
-				$response['time'] = 0;
-			} else {
-				$response['error'] = true;
-			}
+			return $response;
 		}
+
+		$matchData = $this->getLastMatchByAccountId($apiKey, $region, $summonerData->accountId);
+
+		if($matchData === null) {
+			$response['error'] = true;
+
+			return $response;
+		}
+
+		$months = min(max($summonerData->summonerLevel, 6), 30);
+
+		$response['name'] = $summonerData->name;
+		$response['time'] = strtotime("+{$months} months", $matchData->timestamp / 1000);
 
 		DB::table('history')->insert([
-			'name' => $response['name'],
+			'name'   => $response['name'],
 			'server' => strtoupper($response['server']),
-			'ip' => $request->ip(),
+			'ip'     => $request->ip(),
 		]);
-
-		if (!$response['error']) {
-			Cache::put($cacheKey, $response, now()->addMinutes(10));
-		}
 
 		return $response;
 	}
@@ -106,7 +138,7 @@ class ApiController extends Controller {
 
 	public function feedback(Request $request) {
 		$valid = $request->validate([
-			'email' => 'nullable|email',
+			'email'   => 'nullable|email',
 			'message' => 'required|string|min:1|max:65535',
 		]);
 

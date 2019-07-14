@@ -22,6 +22,9 @@ class IndexController extends Controller {
 			'bg-danger' => '#F2DEDE'
 		];
 
+		$color = null;
+		$class = null;
+		$page = null;
 		$content = null;
 		if (substr($request->path(), 0, 5) == 'page/') {
 			$page = substr($request->path(), 5);

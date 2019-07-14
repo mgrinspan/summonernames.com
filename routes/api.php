@@ -11,9 +11,9 @@
 |
 */
 
-Route::get('summoner/{server}/{summoner}', 'ApiController@eta')
+Route::get('summoner/{server}/{summonerName}', 'ApiController@eta')
 	->where('server', '(?:br|eune|euw|jp|kr|lan|las|na|oce|pbe|ru|tr)')
-	->where('summoner', '[^/]+');
+	->where('summonerName', '[^/]+');
 
 Route::get('recent', 'ApiController@recent');
 
