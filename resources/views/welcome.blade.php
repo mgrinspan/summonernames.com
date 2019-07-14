@@ -28,13 +28,8 @@
 					<h4 class="modal-title">SummonerNames.com</h4>
 					<span class="text-muted">Find the perfect summoner name!</span>
 				</div>
-				<div id="notice" class="modal-body">
-					<p>We're out of beta!</p>
-					<button id="feedback" class="btn btn-default">Submit Feedback</button>
-				</div>
 				<div id="js-alert" class="modal-body bg-danger">
-					<p>This site is not functional without JavaScript enabled.<br>We are working on non-JavaScript support, but it may be a while.<br><a href="http://enable-javascript.com/">To learn
-							how to enable JavaScript, click here.</a></p>
+					<p>This site is not functional without JavaScript enabled.<br><a href="https://enable-javascript.com/">To learn how to enable JavaScript, click here.</a></p>
 				</div>
 				<div id="form-container" class="modal-body<?= $content ? ' modal-border ran' : ''; ?>">
 					<form id="main">
@@ -45,7 +40,7 @@
 								<ul id="server-list" class="dropdown-menu">
 									<?php
 
-									foreach ($servers as $short => $full) {
+									foreach($servers as $short => $full) {
 										echo '<li data-server="', $short, '"', ($defaultServer == $short ? ' class="selected"' : ''), '><a class="pointer">', $short, '&nbsp;<span class="small text-muted">', $full, '</span></a></li>';
 									}
 
@@ -54,7 +49,7 @@
 							</div>
 							<input id="name" name="name" type="text" class="form-control" autocomplete="off" title="name">
 							<span class="input-group-btn">
-                                <input type="submit" id="submit" value="Submit" class="btn btn-info">
+                                <input type="submit" id="submit" value="Search" class="btn btn-info">
                             </span>
 						</div>
 					</form>
@@ -63,25 +58,23 @@
 					<div id="status-container"><?= $content; ?></div>
 				</div>
 				<div class="modal-footer<?= $content ? ' ran' : ''; ?>">
-					<table id="footer">
-						<tr>
-							<td>
-								<button id="recently-searched" class="btn btn-default pull-left">Recently Searched
-								</button>
-							</td>
-							<td><a href="/page/privacy-policy/">
-									<button id="privacy-policy" class="btn btn-default">Privacy Policy</button>
-								</a></td>
-						</tr>
-						<tr>
-							<td><a href="/page/disclaimer/">
-									<button id="disclaimer" class="btn btn-default pull-left">Disclaimer</button>
-								</a></td>
-							<td><a href="/page/cookie-policy/">
-									<button id="cookie-policy" class="btn btn-default">Cookie Policy</button>
-								</a></td>
-						</tr>
-					</table>
+					<div id="footer">
+						<div>
+							<button id="recently-searched" class="btn btn-default pull-left">Recently Searched</button>
+							<button id="feedback" class="btn btn-default">Submit Feedback</button>
+						</div>
+						<div id="footer-second-row">
+							<a href="/page/disclaimer/">
+								<button id="disclaimer" class="btn btn-default pull-left">Disclaimer</button>
+							</a>
+							<a href="/page/privacy-policy/">
+								<button id="privacy-policy" class="btn btn-default">Privacy Policy</button>
+							</a>
+							<a href="/page/cookie-policy/">
+								<button id="cookie-policy" class="btn btn-default pull-right">Cookie Policy</button>
+							</a>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

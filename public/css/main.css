@@ -166,3 +166,8 @@ textarea {
 #email:not(:focus) {
 	border-top-width: 0;
 }
+
+#footer-second-row {
+	margin-top: 10px;
+	text-align: center;
+}
