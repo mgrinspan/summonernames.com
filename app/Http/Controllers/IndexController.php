@@ -9,7 +9,7 @@ class IndexController extends Controller {
 		$pages = [
 			'privacy-policy' => ['content' => '<b>SummonerNames.com</b> will <i>never</i> share any personal information from any user with any third party for any purpose.', 'class' => 'bg-warning'],
 			'disclaimer' => ['content' => '<b>SummonerNames.com</b> is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends &copy; Riot Games, Inc.', 'class' => 'bg-warning'],
-			'cookie-policy' => ['content' => '<b>SummonerNames.com</b> uses cookies to save the most recent search. <a href="//support.google.com/adsense/answer/1348695">Additionally, Google Adsense may save some cookies.</a>', 'class' => 'bg-warning'],
+			'cookie-policy' => ['content' => '<b>SummonerNames.com</b> uses cookies to save your most recent search. <a href="//support.google.com/adsense/answer/1348695">Additionally, Google AdSense may save some cookies.</a>', 'class' => 'bg-warning'],
 			'error' => ['content' => 'An error has occurred, please try again soon.', 'class' => 'bg-danger']
 		];
 
