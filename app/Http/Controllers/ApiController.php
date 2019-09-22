@@ -24,9 +24,9 @@ class ApiController extends Controller {
 		$url = "https://{$region}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{$summonerName}?api_key={$apiKey}";
 
 		try {
-			$data = json_decode(file_get_contents($url), false, 512, JSON_THROW_ON_ERROR);
+			$data = json_decode(file_get_contents($url));
 
-			if(isset($data->summonerLevel, $data->name, $data->accountId)) {
+			if(json_last_error() === JSON_ERROR_NONE && isset($data->summonerLevel, $data->name, $data->accountId)) {
 				Cache::put($cacheKey, $data, now()->addMinutes(10));
 
 				return $data;
@@ -52,9 +52,9 @@ class ApiController extends Controller {
 		$url = "https://{$region}.api.riotgames.com/lol/match/v4/matchlists/by-account/{$accountId}?beginIndex=0&endIndex=1&api_key={$apiKey}";
 
 		try {
-			$data = json_decode(file_get_contents($url), false, 512, JSON_THROW_ON_ERROR);
+			$data = json_decode(file_get_contents($url));
 
-			if(isset($data->matches[0])) {
+			if(json_last_error() === JSON_ERROR_NONE && isset($data->matches[0])) {
 				$lastMatch = $data->matches[0];
 
 				Cache::put($cacheKey, $lastMatch, now()->addMinutes(10));
