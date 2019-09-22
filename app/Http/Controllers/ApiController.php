@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 use Throwable;
 use Touhonoob\RateLimit\RateLimit;
 
@@ -33,6 +34,10 @@ class ApiController extends Controller {
 				return null;
 			}
 		} catch(Throwable $exception) {
+			if(Str::contains($exception->getMessage(), 'failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found')) {
+				return true;
+			}
+
 			return null;
 		}
 	}
@@ -59,6 +64,10 @@ class ApiController extends Controller {
 				return null;
 			}
 		} catch(Throwable $exception) {
+			if(Str::contains($exception->getMessage(), 'failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found')) {
+				return true;
+			}
+
 			return null;
 		}
 	}
@@ -82,24 +91,38 @@ class ApiController extends Controller {
 
 		$summonerData = $this->getSummonerByName($apiKey, $region, $summonerName);
 
-		if($summonerData === null || $this->rateLimitExceeded($region)) {
+		if($summonerData === null) {
 			$response['error'] = true;
 
 			return $response;
 		}
 
-		$matchData = $this->getLastMatchByAccountId($apiKey, $region, $summonerData->accountId);
+		$matchData = null;
+		if($summonerData === true) {
+			$response['time'] = 0;
+		} else {
+			$response['name'] = $summonerData->name;
 
-		if($matchData === null) {
-			$response['error'] = true;
+			if($this->rateLimitExceeded($region)) {
+				$response['error'] = true;
 
-			return $response;
+				return $response;
+			}
+
+			$matchData = $this->getLastMatchByAccountId($apiKey, $region, $summonerData->accountId);
+
+			if($matchData === null) {
+				$response['error'] = true;
+
+				return $response;
+			} elseif($matchData === true) {
+				$response['time'] = 0;
+			} else {
+				$months = min(max($summonerData->summonerLevel, 6), 30);
+
+				$response['time'] = strtotime("+{$months} months", $matchData->timestamp / 1000);
+			}
 		}
-
-		$months = min(max($summonerData->summonerLevel, 6), 30);
-
-		$response['name'] = $summonerData->name;
-		$response['time'] = strtotime("+{$months} months", $matchData->timestamp / 1000);
 
 		DB::table('history')->insert([
 			'name'   => $response['name'],
