@@ -79,7 +79,7 @@
 			</div>
 		</div>
 
-		<div class="modal-dialog">
+		<div id="amazon" class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-body">
 					<div id="amzn-assoc-ad-c28f034a-e5ea-4f12-a1c1-dc2721d0f063"></div>
