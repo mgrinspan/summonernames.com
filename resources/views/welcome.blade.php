@@ -82,7 +82,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-body">
-					<div id="amzn-assoc-ad-00c3b93e-6285-4565-b86c-b2d18cf83447"></div>
+					<div id="amzn-assoc-ad-c28f034a-e5ea-4f12-a1c1-dc2721d0f063"></div>
 				</div>
 			</div>
 		</div>
@@ -95,6 +95,6 @@
 	<script src="/js/jquery.min.js"></script>
 	<script src="/js/main.js"></script>
 
-	<script async src="//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=00c3b93e-6285-4565-b86c-b2d18cf83447"></script>
+	<script async src="//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=c28f034a-e5ea-4f12-a1c1-dc2721d0f063"></script>
 </body>
 </html>
