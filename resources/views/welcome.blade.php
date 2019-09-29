@@ -78,6 +78,14 @@
 				</div>
 			</div>
 		</div>
+
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div id="amzn-assoc-ad-00c3b93e-6285-4565-b86c-b2d18cf83447"></div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<div id="text-sampling" class="modal shown">
@@ -86,5 +94,7 @@
 
 	<script src="/js/jquery.min.js"></script>
 	<script src="/js/main.js"></script>
+
+	<script async src="//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=00c3b93e-6285-4565-b86c-b2d18cf83447"></script>
 </body>
 </html>
