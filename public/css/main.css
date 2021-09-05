@@ -160,7 +160,6 @@ textarea {
 
 #email {
 	border-top-left-radius: 0;
-	margin-bottom: 1px;
 }
 
 #email:not(:focus) {
