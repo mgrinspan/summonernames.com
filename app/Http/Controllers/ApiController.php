@@ -37,7 +37,7 @@ class ApiController extends Controller {
 
 		$data = null;
 		try {
-			$data = json_decode($response, JSON_THROW_ON_ERROR);
+			$data = json_decode($response, flags: JSON_THROW_ON_ERROR);
 		} catch(JsonException $exception) {
 			return null;
 		}
@@ -73,7 +73,7 @@ class ApiController extends Controller {
 
 		$data = null;
 		try {
-			$data = json_decode($response, JSON_THROW_ON_ERROR);
+			$data = json_decode($response, flags: JSON_THROW_ON_ERROR);
 		} catch(JsonException) {
 			return null;
 		}
