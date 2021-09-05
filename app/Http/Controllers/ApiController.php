@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Servers;
+use App\Models\Servers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
+use JsonException;
 use Throwable;
 use Touhonoob\RateLimit\RateLimit;
 
@@ -23,23 +24,31 @@ class ApiController extends Controller {
 
 		$url = "https://{$region}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{$summonerName}?api_key={$apiKey}";
 
+		$response = null;
 		try {
-			$data = json_decode(file_get_contents($url));
-
-			if(json_last_error() === JSON_ERROR_NONE && isset($data->summonerLevel, $data->name, $data->accountId)) {
-				Cache::put($cacheKey, $data, now()->addMinutes(10));
-
-				return $data;
-			} else {
-				return null;
-			}
+			$response = file_get_contents($url);
 		} catch(Throwable $exception) {
-			if(Str::contains($exception->getMessage(), 'failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found')) {
+			if(Str::contains($exception->getMessage(), 'Failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found')) {
 				return true;
 			}
 
 			return null;
 		}
+
+		$data = null;
+		try {
+			$data = json_decode($response, JSON_THROW_ON_ERROR);
+		} catch(JsonException $exception) {
+			return null;
+		}
+
+		if(isset($data->summonerLevel, $data->name, $data->accountId)) {
+			Cache::put($cacheKey, $data, now()->addMinutes(10));
+
+			return $data;
+		}
+
+		return null;
 	}
 
 	protected function getLastMatchByAccountId($apiKey, $region, $accountId) {
@@ -51,25 +60,33 @@ class ApiController extends Controller {
 
 		$url = "https://{$region}.api.riotgames.com/lol/match/v4/matchlists/by-account/{$accountId}?beginIndex=0&endIndex=1&api_key={$apiKey}";
 
+		$response = null;
 		try {
-			$data = json_decode(file_get_contents($url));
-
-			if(json_last_error() === JSON_ERROR_NONE && isset($data->matches[0])) {
-				$lastMatch = $data->matches[0];
-
-				Cache::put($cacheKey, $lastMatch, now()->addMinutes(10));
-
-				return $lastMatch;
-			} else {
-				return null;
-			}
+			$response = file_get_contents($url);
 		} catch(Throwable $exception) {
-			if(Str::contains($exception->getMessage(), 'failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found')) {
+			if(Str::contains($exception->getMessage(), 'Failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found')) {
 				return true;
 			}
 
 			return null;
 		}
+
+		$data = null;
+		try {
+			$data = json_decode($response, JSON_THROW_ON_ERROR);
+		} catch(JsonException) {
+			return null;
+		}
+
+		if(isset($data->matches[0])) {
+			$lastMatch = $data->matches[0];
+
+			Cache::put($cacheKey, $lastMatch, now()->addMinutes(10));
+
+			return $lastMatch;
+		}
+
+		return null;
 	}
 
 	public function eta(Request $request, $server, $summonerName) {
@@ -97,7 +114,6 @@ class ApiController extends Controller {
 			return $response;
 		}
 
-		$matchData = null;
 		if($summonerData === true) {
 			$response['time'] = 0;
 		} else {

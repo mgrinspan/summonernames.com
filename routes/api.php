@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\ApiController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -11,10 +14,10 @@
 |
 */
 
-Route::get('summoner/{server}/{summonerName}', 'ApiController@eta')
+Route::get('summoner/{server}/{summonerName}', [ApiController::class, 'eta'])
 	->where('server', '(?:br|eune|euw|jp|kr|lan|las|na|oce|pbe|ru|tr)')
 	->where('summonerName', '[^/]+');
 
-Route::get('recent', 'ApiController@recent');
+Route::get('recent', [ApiController::class, 'recent']);
 
-Route::post('feedback', 'ApiController@feedback');
+Route::post('feedback', [ApiController::class, 'feedback']);

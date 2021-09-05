@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\IndexController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,8 +14,8 @@
 |
 */
 
-Route::get('/', 'IndexController@index');
+Route::get('/', [IndexController::class, 'index']);
 
-Route::get('/{server}/{summonerOrPage}', 'IndexController@index')
+Route::get('/{server}/{summonerOrPage}', [IndexController::class, 'index'])
 	->where('server', '(?:br|eune|euw|jp|kr|lan|las|na|oce|pbe|ru|tr|page)')
 	->where('summonerOrPage', '[^/]+');
