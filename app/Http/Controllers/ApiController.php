@@ -172,7 +172,12 @@ class ApiController extends Controller {
 	}
 
 	public function recent() {
-		return DB::table('history')->distinct()->latest()->limit(10)->select('name', 'server')->get();
+		return DB::table('history')
+			->select('name', 'server')
+			->groupBy('name', 'server')
+			->orderByDesc(DB::raw('max(`created_at`)'))
+			->limit(10)
+			->get();
 	}
 
 	public function feedback(Request $request) {
