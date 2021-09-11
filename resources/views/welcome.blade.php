@@ -84,10 +84,18 @@
 				<div class="modal-body text-center">
 					<p>Support us by buying RP on Amazon!</p>
 					<div>
-						<a target="_blank" href="https://www.amazon.com/gp/product/B014X427WM/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B014X427WM&linkCode=as2&tag=summonernam0c-20&linkId=8b589d4e3847095cbf557cfd0681b113"><img border="0" src="//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=US&ASIN=B014X427WM&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag=summonernam0c-20"></a>
-						<a target="_blank" href="https://www.amazon.com/gp/product/B0153XBEBM/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B0153XBEBM&linkCode=as2&tag=summonernam0c-20&linkId=f8e5c3de48ace044f342e6cdcd05decc"><img border="0" src="//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=US&ASIN=B0153XBEBM&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag=summonernam0c-20"></a>
-						<a target="_blank" href="https://www.amazon.com/gp/product/B0153XHRPY/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B0153XHRPY&linkCode=as2&tag=summonernam0c-20&linkId=2f721430c722a2a981eef908e17dcd40"><img border="0" src="//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=US&ASIN=B0153XHRPY&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag=summonernam0c-20"></a>
-						<a target="_blank" href="https://www.amazon.com/gp/product/B0153X7HKY/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B0153X7HKY&linkCode=as2&tag=summonernam0c-20&linkId=af8997b11b9d9c68c2140aeaee47bef9"><img border="0" src="//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=US&ASIN=B0153X7HKY&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag=summonernam0c-20"></a>
+						@php
+							$links = [
+								'B014X427WM' => '8b589d4e3847095cbf557cfd0681b113',
+								'B0153XBEBM' => 'f8e5c3de48ace044f342e6cdcd05decc',
+								'B0153XHRPY' => '2f721430c722a2a981eef908e17dcd40',
+								'B0153X7HKY' => 'af8997b11b9d9c68c2140aeaee47bef9',
+							];
+						@endphp
+
+						@foreach($links as $asin => $linkId)
+							<a target="_blank" href="https://www.amazon.com/gp/product/{{ $asin }}/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN={{ $asin }}&linkCode=as2&tag=summonernam0c-20&linkId={{ $linkId }}"><img border="0" src="//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=US&ASIN={{ $asin }}&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag=summonernam0c-20"></a>
+						@endforeach
 					</div>
 				</div>
 			</div>
