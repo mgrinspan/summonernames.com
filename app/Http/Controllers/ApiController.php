@@ -51,17 +51,14 @@ class ApiController extends Controller {
 
 			$matchEnd = $this->getLastMatchEndByPUUID($apiKey, $server, $summonerData->puuid);
 
-			if($matchEnd === null) {
+			if($matchEnd === null && !isset($summonerData->summonerLevel)) {
 				$response['error'] = true;
 
 				return $response;
-			} elseif($matchEnd === true) {
-				$response['time'] = 0;
-			} else {
-				$months = min(max($summonerData->summonerLevel, 6), 30);
-
-				$response['time'] = strtotime("+{$months} months", $matchEnd / 1000);
 			}
+
+			$months = min(max($summonerData->summonerLevel, 6), 30);
+			$response['time'] = strtotime("+{$months} months", max($summonerData->revisionDate, (int)$matchEnd) / 1000);
 		}
 
 		DB::table('history')->insert([
