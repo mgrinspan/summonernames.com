@@ -13,82 +13,6 @@ use Throwable;
 use Touhonoob\RateLimit\RateLimit;
 
 class ApiController extends Controller {
-	protected function getSummonerByName($apiKey, $region, $summonerName) {
-		$summonerName = rawurlencode($summonerName);
-
-		$cacheKey = 'summoner-' . $region . '-' . sha1($summonerName);
-
-		if(Cache::has($cacheKey)) {
-			return Cache::get($cacheKey);
-		}
-
-		$url = "https://{$region}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{$summonerName}?api_key={$apiKey}";
-
-		$response = null;
-		try {
-			$response = file_get_contents($url);
-		} catch(Throwable $exception) {
-			if(Str::contains($exception->getMessage(), 'Failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found')) {
-				return true;
-			}
-
-			return null;
-		}
-
-		$data = null;
-		try {
-			$data = json_decode($response, flags: JSON_THROW_ON_ERROR);
-		} catch(JsonException $exception) {
-			return null;
-		}
-
-		if(isset($data->summonerLevel, $data->name, $data->accountId)) {
-			Cache::put($cacheKey, $data, now()->addMinutes(10));
-
-			return $data;
-		}
-
-		return null;
-	}
-
-	protected function getLastMatchByAccountId($apiKey, $region, $accountId) {
-		$cacheKey = 'matches-' . $region . '-' . sha1($accountId);
-
-		if(Cache::has($cacheKey)) {
-			return Cache::get($cacheKey);
-		}
-
-		$url = "https://{$region}.api.riotgames.com/lol/match/v4/matchlists/by-account/{$accountId}?beginIndex=0&endIndex=1&api_key={$apiKey}";
-
-		$response = null;
-		try {
-			$response = file_get_contents($url);
-		} catch(Throwable $exception) {
-			if(Str::contains($exception->getMessage(), 'Failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found')) {
-				return true;
-			}
-
-			return null;
-		}
-
-		$data = null;
-		try {
-			$data = json_decode($response, flags: JSON_THROW_ON_ERROR);
-		} catch(JsonException) {
-			return null;
-		}
-
-		if(isset($data->matches[0])) {
-			$lastMatch = $data->matches[0];
-
-			Cache::put($cacheKey, $lastMatch, now()->addMinutes(10));
-
-			return $lastMatch;
-		}
-
-		return null;
-	}
-
 	public function eta(Request $request, $server, $summonerName) {
 		$apiKey = config('services.riot-api.key');
 		$region = strtolower(Servers::getRegion($server));
@@ -106,7 +30,7 @@ class ApiController extends Controller {
 			return $response;
 		}
 
-		$summonerData = $this->getSummonerByName($apiKey, $region, $summonerName);
+		$summonerData = $this->getSummonerByName($apiKey, $server, $summonerName);
 
 		if($summonerData === null) {
 			$response['error'] = true;
@@ -125,18 +49,18 @@ class ApiController extends Controller {
 				return $response;
 			}
 
-			$matchData = $this->getLastMatchByAccountId($apiKey, $region, $summonerData->accountId);
+			$matchEnd = $this->getLastMatchEndByPUUID($apiKey, $server, $summonerData->puuid);
 
-			if($matchData === null) {
+			if($matchEnd === null) {
 				$response['error'] = true;
 
 				return $response;
-			} elseif($matchData === true) {
+			} elseif($matchEnd === true) {
 				$response['time'] = 0;
 			} else {
 				$months = min(max($summonerData->summonerLevel, 6), 30);
 
-				$response['time'] = strtotime("+{$months} months", $matchData->timestamp / 1000);
+				$response['time'] = strtotime("+{$months} months", $matchEnd / 1000);
 			}
 		}
 
@@ -169,6 +93,118 @@ class ApiController extends Controller {
 			});
 
 		return $hitLimit;
+	}
+
+	protected function getSummonerByName($apiKey, $server, $summonerName) {
+		$region = Servers::getPlatform($server);
+		$summonerName = rawurlencode($summonerName);
+
+		$cacheKey = 'summoner-' . $region . '-' . sha1($summonerName);
+
+		if(Cache::has($cacheKey)) {
+			return Cache::get($cacheKey);
+		}
+
+		$url = "https://{$region}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{$summonerName}?api_key={$apiKey}";
+
+		$response = null;
+		try {
+			$response = file_get_contents($url);
+		} catch(Throwable $exception) {
+			if(Str::contains($exception->getMessage(), 'Failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found')) {
+				return true;
+			}
+
+			return null;
+		}
+
+		$data = null;
+		try {
+			$data = json_decode($response, flags: JSON_THROW_ON_ERROR);
+		} catch(JsonException $exception) {
+			return null;
+		}
+
+		if(isset($data->summonerLevel, $data->name, $data->puuid)) {
+			Cache::put($cacheKey, $data, now()->addMinutes(10));
+
+			return $data;
+		}
+
+		return null;
+	}
+
+	protected function getLastMatchEndByPUUID($apiKey, $server, $puuid) {
+		$region = Servers::getRegion($server);
+		$cacheKey = 'matchIds-' . $region . '-' . sha1($puuid);
+
+		if(Cache::has($cacheKey)) {
+			return Cache::get($cacheKey);
+		}
+
+		$url = "https://{$region}.api.riotgames.com/lol/match/v5/matches/by-puuid/{$puuid}/ids?start=0&count=1&api_key={$apiKey}";
+
+		$response = null;
+		try {
+			$response = file_get_contents($url);
+		} catch(Throwable $exception) {
+			if(Str::contains($exception->getMessage(), 'Failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found')) {
+				return true;
+			}
+
+			return null;
+		}
+		$data = null;
+		try {
+			$data = json_decode($response, flags: JSON_THROW_ON_ERROR);
+		} catch(JsonException) {
+			return null;
+		}
+
+		if(empty($data)) {
+			return true;
+		}
+
+		$lastMatch = $this->getMatchEndById($apiKey, $server, $data[0]);
+
+		if($lastMatch === true) {
+			return true;
+		}
+
+		Cache::put($cacheKey, $lastMatch, now()->addMinutes(10));
+
+		return $lastMatch;
+	}
+
+	protected function getMatchEndById($apiKey, $server, $matchId) {
+		$region = Servers::getRegion($server);
+		$cacheKey = 'match-' . $region . '-' . sha1($matchId);
+
+		if(Cache::has($cacheKey)) {
+			return Cache::get($cacheKey);
+		}
+
+		$url = "https://{$region}.api.riotgames.com/lol/match/v5/matches/{$matchId}?api_key={$apiKey}";
+
+		$response = null;
+		try {
+			$response = file_get_contents($url);
+		} catch(Throwable $exception) {
+			if(Str::contains($exception->getMessage(), 'Failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found')) {
+				return true;
+			}
+
+			return null;
+		}
+
+		$data = null;
+		try {
+			$data = json_decode($response, flags: JSON_THROW_ON_ERROR);
+		} catch(JsonException) {
+			return null;
+		}
+
+		return $data->info->gameEndTimestamp ?? true;
 	}
 
 	public function recent() {
