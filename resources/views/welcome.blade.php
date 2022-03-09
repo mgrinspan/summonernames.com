@@ -9,7 +9,7 @@
 		document.documentElement.className += '-enabled';
 	</script>
 
-	<meta name="description" content="Find when your desired summoner name becomes available!">
+	<meta name="description" content="Find the perfect summoner name!">
 	<meta name="author" content="Michael Grinspan">
 	<meta name="keywords" content="summonernames,summoner names,lol inactive,lol,inactive,lolinactive,summoner names,summoner name,cleanup,checker">
 
