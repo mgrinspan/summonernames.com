@@ -215,7 +215,7 @@
 			timezone = timezone.match(/\b([A-Z]+)/g).join('');
 		}
 
-		now = Math.round(Date.now() / 1000) + 5000;
+		now = Math.round(Date.now() / 1000);
 
 		if (datetime.getTime() / 1000 <= now) {
 			display('dynamic', 'available', {
