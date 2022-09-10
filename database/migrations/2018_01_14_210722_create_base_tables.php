@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBaseTables extends Migration {
+return new class extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -40,4 +40,4 @@ class CreateBaseTables extends Migration {
 		Schema::dropIfExists('history');
 		Schema::dropIfExists('feedback');
 	}
-}
+};

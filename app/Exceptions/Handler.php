@@ -7,9 +7,18 @@ use Throwable;
 
 class Handler extends ExceptionHandler {
 	/**
+	 * A list of exception types with their corresponding custom log levels.
+	 *
+	 * @var array<class-string<\Throwable>, \Psr\Log\LogLevel::*>
+	 */
+	protected $levels = [
+		//
+	];
+
+	/**
 	 * A list of the exception types that are not reported.
 	 *
-	 * @var array
+	 * @var array<int, class-string<\Throwable>>
 	 */
 	protected $dontReport = [
 		//
@@ -27,7 +36,7 @@ class Handler extends ExceptionHandler {
 	];
 
 	/**
-	 * Register the exception handling callbacks for the application.
+	 * Register the exception handling callbacks to the session on the application.
 	 *
 	 * @return void
 	 */
